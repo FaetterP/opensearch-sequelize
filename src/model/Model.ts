@@ -7,6 +7,11 @@ import axios from "axios";
 export class Model {
   public static sequelize?: Sequelize;
 
+  public _index!: string;
+  public _id!: string;
+  public _version!: number;
+  public _score?: number;
+
   public static async findByPk<M extends Model>(
     this: ModelStatic<M>,
     id: string
@@ -26,7 +31,15 @@ export class Model {
         }
       );
 
-      return response.data._source;
+      if (!response.data.found) return;
+
+      const { _id, _index, _version, _source } = response.data;
+      return {
+        ..._source,
+        _id,
+        _index,
+        _version,
+      };
     } catch (error) {
       console.log(error);
     }
