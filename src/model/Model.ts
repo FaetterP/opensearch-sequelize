@@ -3,6 +3,7 @@ import { ModelStatic } from "../types/model";
 import { FindByFkError, FindByPkResponse } from "../types/responses";
 import { getModelName } from "../utils/metadata";
 import axios, { AxiosError } from "axios";
+import { convertHit } from "../utils/opensearch";
 
 export class Model {
   public static setSequelize(sequelize: Sequelize) {
@@ -41,13 +42,7 @@ export class Model {
         { auth: Model.auth }
       );
 
-      const { _id, _index, _version, _source } = response.data;
-      return {
-        ..._source,
-        _id,
-        _index,
-        _version,
-      };
+      return convertHit<M>(response.data);
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
 
