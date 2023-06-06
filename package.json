@@ -1,0 +1,32 @@
+{
+  "name": "opensearch-sequelize",
+  "version": "1.0.0",
+  "description": "Sequelize-like opensearch ORM.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FaetterP/opensearch-sequelize.git"
+  },
+  "keywords": [
+    "sequelize",
+    "opensearch",
+    "promises",
+    "typescript"
+  ],
+  "author": "FaetterP",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FaetterP/opensearch-sequelize/issues"
+  },
+  "homepage": "https://github.com/FaetterP/opensearch-sequelize#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
+  }
+}
