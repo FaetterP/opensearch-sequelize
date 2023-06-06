@@ -5,7 +5,23 @@ import { getModelName } from "../utils/metadata";
 import axios from "axios";
 
 export class Model {
-  public static sequelize?: Sequelize;
+  public static setSequelize(sequelize: Sequelize) {
+    if (Model.sequelize) throw new Error("sequelize already exists");
+
+    Model.sequelize = sequelize;
+    Model.host = sequelize.options.host;
+    Model.auth = {
+      username: sequelize.options.username,
+      password: sequelize.options.password,
+    };
+  }
+
+  private static sequelize?: Sequelize;
+  private static host = "";
+  private static auth = {
+    username: "",
+    password: "",
+  };
 
   public _index!: string;
   public _id!: string;
@@ -20,15 +36,9 @@ export class Model {
       if (!Model.sequelize) throw new Error("Sequelize not found");
 
       const indexName = getModelName(this);
-      const { username, password } = Model.sequelize.options;
       const response = await axios.get<FindByPkResponse<M>>(
-        `${Model.sequelize.options.host}/${indexName}/_doc/${id}`,
-        {
-          auth: {
-            username,
-            password,
-          },
-        }
+        `${Model.host}/${indexName}/_doc/${id}`,
+        { auth: Model.auth }
       );
 
       if (!response.data.found) return;

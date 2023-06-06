@@ -1,4 +1,3 @@
-
 import { Model } from "../model/Model";
 import { SequelizeOptions } from "../types/sequelize";
 
@@ -8,6 +7,6 @@ export class Sequelize {
   constructor(options: SequelizeOptions) {
     this.options = options;
 
-    Model.sequelize = this;
+    Model.setSequelize(this);
   }
 }
