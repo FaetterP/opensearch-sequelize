@@ -1,8 +1,8 @@
 import { Sequelize } from "../sequelize/Sequelize";
 import { ModelStatic } from "../types/model";
-import { FindByPkResponse } from "../types/responses";
+import { FindByFkError, FindByPkResponse } from "../types/responses";
 import { getModelName } from "../utils/metadata";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export class Model {
   public static setSequelize(sequelize: Sequelize) {
@@ -41,8 +41,6 @@ export class Model {
         { auth: Model.auth }
       );
 
-      if (!response.data.found) return;
-
       const { _id, _index, _version, _source } = response.data;
       return {
         ..._source,
@@ -51,7 +49,14 @@ export class Model {
         _version,
       };
     } catch (error) {
-      console.log(error);
+      if (!(error instanceof AxiosError)) throw error;
+
+      const data = error.response?.data as FindByFkError;
+      if ((error.status === 404, data.found === false)) {
+        return undefined;
+      }
+
+      throw new Error(error.message);
     }
   }
 }

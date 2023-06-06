@@ -7,3 +7,9 @@ export type FindByPkResponse<M> = {
   found: boolean;
   _source: M;
 };
+
+export type FindByFkError = {
+  _index: string;
+  _id: string;
+  found: false;
+};
