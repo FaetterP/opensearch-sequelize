@@ -1,3 +1,5 @@
+import { DeepPartial } from "./DeepPartial";
+
 export type IndexOptions = {
   tableName?: string;
 };
@@ -11,3 +13,62 @@ type NonConstructorKeys<T> = {
 }[keyof T];
 type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>;
 
+export type InitOptions = DeepPartial<{
+  settings: IndexSettings;
+  mappings: {
+    properties: {
+      [key: string]: {
+        type: unknown /* TODO */;
+      };
+    };
+  };
+  aliases: {
+    [key: string]: unknown /* TODO */;
+  };
+}>;
+
+export type IndexSettings = StaticIndexSettings & DynamicIndexSettings;
+
+export type StaticIndexSettings = {
+  index: {
+    numberOfShards: number;
+    numberOfRoutingShards: number;
+    shard: {
+      checkOnStartup: boolean | "checksum";
+    };
+    codec: "default" | "best_compression";
+    routingPartitionSize: number;
+    softDeletes: { retentionLease: { period: string } };
+    loadFixedBitsetFiltersEagerly: boolean;
+    hidden: boolean;
+  };
+};
+
+export type DynamicIndexSettings = {
+  index: {
+    numberOfReplicas: number;
+    autoExpandReplicas: unknown /* TODO */;
+    search: { idle: { after: string } };
+    refreshInterval: string;
+    maxResultWindow: number;
+    maxInnerResultWindow: number;
+    maxRescoreWindow: number;
+    maxDocvalueFieldsSearch: number;
+    maxScriptFields: number;
+    maxNgramDiff: number;
+    maxShingleDiff: number;
+    maxRefreshListeners: number;
+    analyze: { maxTokenCount: number };
+    highlight: { maxAnalyzedOffset: number };
+    maxTermsCount: number;
+    maxRegexLength: number;
+    defaultField: string /* TODO */;
+    routing: {
+      allocation: { enable: unknown } /* TODO */;
+      rebalance: { enable: "all" | "primaries" | "replicas" | "none" };
+    };
+    gcDeletes: string;
+    defaultPipeline: unknown /* TODO */;
+    finalPipeline: unknown /* TODO */;
+  };
+};
