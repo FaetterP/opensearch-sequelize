@@ -2,6 +2,7 @@ import { Sequelize } from "../sequelize/Sequelize";
 import { InitOptions, ModelStatic } from "../types/model";
 import {
   BaseOpensearchError,
+  DropResponse,
   FindByFkError,
   FindByPkResponse,
   InitResponse,
@@ -100,13 +101,32 @@ export class Model {
       };
 
       const indexName = getModelName(this);
-      const ret = await axios.put<InitResponse>(
+      const response = await axios.put<InitResponse>(
         `${Model.host}/${indexName}`,
         body,
         { auth: Model.auth }
       );
 
-      return { index: ret.data.index };
+      return { index: response.data.index };
+    } catch (error) {
+      if (!(error instanceof AxiosError)) throw error;
+
+      const data = error.response?.data as BaseOpensearchError;
+      const message = extractMessage(data);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Drop the index represented by this Model.
+   */
+  public static async drop<M extends Model>(this: ModelStatic<M>) {
+    try {
+      const indexName = getModelName(this);
+      const ret = await axios.delete<DropResponse>(
+        `${Model.host}/${indexName}`,
+        { auth: Model.auth }
+      );
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
 

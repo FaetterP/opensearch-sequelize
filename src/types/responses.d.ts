@@ -45,3 +45,7 @@ export type InitResponse = {
   shards_acknowledged: true;
   index: string;
 };
+
+export type DropResponse = {
+  acknowledged: true;
+};
