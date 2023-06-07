@@ -1,3 +1,19 @@
+export type BaseOpensearchError = {
+  error: {
+    root_cause: Cause[];
+    type: string;
+    reason: string;
+  };
+  status: number;
+};
+
+type Cause = {
+  type: string;
+  reason: string;
+  index: string;
+  index_uuid: string;
+};
+
 export type FindByPkResponse<M> = {
   _index: string;
   _id: string;
@@ -12,4 +28,10 @@ export type FindByFkError = {
   _index: string;
   _id: string;
   found: false;
+};
+
+export type InitResponse = {
+  acknowledged: true;
+  shards_acknowledged: true;
+  index: string;
 };

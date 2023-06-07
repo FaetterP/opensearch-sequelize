@@ -1,9 +1,15 @@
 import { Sequelize } from "../sequelize/Sequelize";
 import { ModelStatic } from "../types/model";
-import { FindByFkError, FindByPkResponse } from "../types/responses";
+import {
+  BaseOpensearchError,
+  FindByFkError,
+  FindByPkResponse,
+  InitResponse,
+} from "../types/responses";
 import { getModelName } from "../utils/metadata";
 import axios, { AxiosError } from "axios";
 import { convertHit } from "../utils/opensearch";
+import { extractMessage } from "../utils/errors";
 
 export class Model {
   public static setSequelize(sequelize: Sequelize) {
@@ -28,6 +34,25 @@ export class Model {
   public _id!: string;
   public _version!: number;
   public _score?: number;
+
+  public static async init<M extends Model>(this: ModelStatic<M>) {
+    try {
+      const indexName = getModelName(this);
+      const ret = await axios.put<InitResponse>(
+        `${Model.host}/${indexName}`,
+        undefined,
+        { auth: Model.auth }
+      );
+
+      return { index: ret.data.index };
+    } catch (error) {
+      if (!(error instanceof AxiosError)) throw error;
+
+      const data = error.response?.data as BaseOpensearchError;
+      const message = extractMessage(data);
+      throw new Error(message);
+    }
+  }
 
   public static async findByPk<M extends Model>(
     this: ModelStatic<M>,
