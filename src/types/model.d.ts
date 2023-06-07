@@ -11,12 +11,3 @@ type NonConstructorKeys<T> = {
 }[keyof T];
 type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>;
 
-export type Hit = {
-  _id: string;
-  _index: string;
-  _version: number;
-  _score?: number;
-  _source: {
-    [key: string]: any;
-  };
-};

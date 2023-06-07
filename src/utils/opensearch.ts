@@ -1,5 +1,5 @@
 import { Model } from "../model/Model";
-import { Hit } from "../types/model";
+import { Hit } from "../types/responses";
 
 export function convertHit<M extends Model>(data: Hit): M {
   return {

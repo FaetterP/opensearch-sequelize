@@ -35,6 +35,11 @@ export class Model {
   public _version!: number;
   public _score?: number;
 
+  /**
+   * Create index with static or dynamic options.
+   * 
+   * Read more: https://opensearch.org/docs/latest/api-reference/index-apis/create-index/
+   */
   public static async init<M extends Model>(this: ModelStatic<M>) {
     try {
       const indexName = getModelName(this);
@@ -54,6 +59,11 @@ export class Model {
     }
   }
 
+  /**
+   * Search for a single instance by its _id.
+   * @param id Id of the document.
+   * @returns Found document.
+   */
   public static async findByPk<M extends Model>(
     this: ModelStatic<M>,
     id: string

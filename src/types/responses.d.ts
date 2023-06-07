@@ -1,3 +1,13 @@
+export type Hit = {
+  _id: string;
+  _index: string;
+  _version: number;
+  _score?: number;
+  _source: {
+    [key: string]: any;
+  };
+};
+
 export type BaseOpensearchError = {
   error: {
     root_cause: Cause[];
