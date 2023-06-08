@@ -1,7 +1,13 @@
 import { Sequelize } from "../sequelize/Sequelize";
-import { FindAllOptions, InitOptions, ModelStatic } from "../types/model";
+import {
+  CreatedObject,
+  FindAllOptions,
+  InitOptions,
+  ModelStatic,
+} from "../types/model";
 import {
   BaseOpensearchError,
+  CreateResponse,
   DropResponse,
   FindAllResponse,
   FindByFkError,
@@ -124,10 +130,44 @@ export class Model {
   public static async drop<M extends Model>(this: ModelStatic<M>) {
     try {
       const indexName = getModelName(this);
-      const ret = await axios.delete<DropResponse>(
-        `${Model.host}/${indexName}`,
+      await axios.delete<DropResponse>(`${Model.host}/${indexName}`, {
+        auth: Model.auth,
+      });
+    } catch (error) {
+      if (!(error instanceof AxiosError)) throw error;
+
+      const data = error.response?.data as BaseOpensearchError;
+      const message = extractMessage(data);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Save the values as new document.
+   * 
+   * OpenSearch automatically creates an index when you add a document to an index that doesn’t already exist.  
+   * It also automatically generates an _id if you don’t specify an _id in the request.
+   */
+  public static async create<M extends Model>(
+    this: ModelStatic<M>,
+    values: CreatedObject<M>
+  ) {
+    try {
+      const { _id, ...data } = values;
+      const id = _id ? `/${_id}` : "";
+
+      const indexName = getModelName(this);
+      const response = await axios.post<CreateResponse>(
+        `${Model.host}/${indexName}/_doc${id}`,
+        data,
         { auth: Model.auth }
       );
+
+      return {
+        index: response.data._index,
+        id: response.data._id,
+        version: response.data._version,
+      };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
 

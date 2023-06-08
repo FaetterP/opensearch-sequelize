@@ -1,3 +1,4 @@
+import { Model } from "../model/Model";
 import { DeepPartial } from "../utils/DeepPartial";
 
 export type IndexOptions = {
@@ -77,3 +78,8 @@ export type FindAllOptions = {
   limit?: number;
   offset?: number;
 };
+
+export type CreatedObject<M extends Model> = Omit<
+  M,
+  "_index" | "_id" | "_version" | "_score"
+> & { _id?: string };

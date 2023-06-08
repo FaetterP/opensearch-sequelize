@@ -68,3 +68,17 @@ export type FindAllResponse = {
     hits: Hit[];
   };
 };
+
+export type CreateResponse = {
+  _index: string;
+  _id: string;
+  _version: number;
+  result: "created";
+  _shards: {
+    total: number;
+    successful: number;
+    failed: number;
+  };
+  _seq_no: number;
+  _primary_term: number;
+};
