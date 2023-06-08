@@ -1,8 +1,9 @@
 import { Sequelize } from "../sequelize/Sequelize";
-import { InitOptions, ModelStatic } from "../types/model";
+import { FindAllOptions, InitOptions, ModelStatic } from "../types/model";
 import {
   BaseOpensearchError,
   DropResponse,
+  FindAllResponse,
   FindByFkError,
   FindByPkResponse,
   InitResponse,
@@ -11,7 +12,7 @@ import { getModelName } from "../utils/metadata";
 import axios, { AxiosError } from "axios";
 import { convertHit } from "../utils/opensearch";
 import { extractMessage } from "../utils/errors";
-import { InitRequest } from "../types/requests";
+import { FindAllRequest, InitRequest } from "../types/requests";
 
 export class Model {
   public static setSequelize(sequelize: Sequelize) {
@@ -164,6 +165,33 @@ export class Model {
       }
 
       throw new Error(error.message);
+    }
+  }
+
+  public static async findAll<M extends Model>(
+    this: ModelStatic<M>,
+    options?: FindAllOptions
+  ): Promise<M[]> {
+    try {
+      if (!Model.sequelize) throw new Error("Sequelize not found");
+
+      const data: FindAllRequest = {
+        from: options?.offset,
+        size: options?.limit,
+      };
+
+      const indexName = getModelName(this);
+      const response = await axios.get<FindAllResponse>(
+        `${Model.host}/${indexName}/_search`,
+        { auth: Model.auth, data }
+      );
+
+      return response.data.hits.hits.map((hit) => convertHit(hit));
+    } catch (error) {
+      if (!(error instanceof AxiosError)) throw error;
+
+      const message = extractMessage(error.response?.data);
+      throw new Error(message);
     }
   }
 }

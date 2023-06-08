@@ -49,3 +49,22 @@ export type InitResponse = {
 export type DropResponse = {
   acknowledged: true;
 };
+
+export type FindAllResponse = {
+  took: number;
+  timed_out: false;
+  _shards: {
+    total: number;
+    successful: number;
+    skipped: number;
+    failed: number;
+  };
+  hits: {
+    total: {
+      value: number;
+      relation: "eq";
+    };
+    max_score: number | null;
+    hits: Hit[];
+  };
+};

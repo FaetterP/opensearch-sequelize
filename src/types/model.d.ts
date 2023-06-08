@@ -1,4 +1,4 @@
-import { DeepPartial } from "./DeepPartial";
+import { DeepPartial } from "../utils/DeepPartial";
 
 export type IndexOptions = {
   tableName?: string;
@@ -71,4 +71,9 @@ export type DynamicIndexSettings = {
     defaultPipeline: unknown /* TODO */;
     finalPipeline: unknown /* TODO */;
   };
+};
+
+export type FindAllOptions = {
+  limit?: number;
+  offset?: number;
 };

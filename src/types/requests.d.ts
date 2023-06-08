@@ -1,4 +1,4 @@
-import { DeepPartial } from "./DeepPartial";
+import { DeepPartial } from "../utils/DeepPartial";
 
 export type InitRequest = DeepPartial<{
   settings: IndexSettingsRequest;
@@ -59,4 +59,9 @@ export type DynamicIndexSettingsRequest = {
     default_pipeline: unknown /* TODO */;
     final_pipeline: unknown /* TODO */;
   };
+};
+
+export type FindAllRequest = {
+  from?: number;
+  size?: number;
 };
