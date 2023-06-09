@@ -1,7 +1,7 @@
 {
   "name": "opensearch-sequelize",
   "version": "1.0.0",
-  "description": "Sequelize-like opensearch ORM.",
+  "description": "Sequelize-like Opensearch ORM.",
   "main": "index.js",
   "scripts": {
     "build": "tsc"
