@@ -110,3 +110,17 @@ export type DestroyByPkError404 = {
   _seq_no: number;
   _primary_term: number;
 };
+
+export type UpdateResponse = {
+  _index: string;
+  _id: string;
+  _version: number;
+  result: "updated";
+  _shards: {
+    total: number;
+    successful: number;
+    failed: number;
+  };
+  _seq_no: number;
+  _primary_term: number;
+};

@@ -83,3 +83,7 @@ export type CreatedObject<M extends Model> = Omit<
   M,
   "_index" | "_id" | "_version" | "_score"
 > & { _id?: string };
+
+export type UpdateObject<M extends Model> = Partial<CreatedObject<M>> & {
+  _id: string;
+};

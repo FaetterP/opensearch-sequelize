@@ -4,6 +4,7 @@ import {
   FindAllOptions,
   InitOptions,
   ModelStatic,
+  UpdateObject,
 } from "../types/model";
 import {
   BaseOpensearchError,
@@ -15,12 +16,13 @@ import {
   FindByFkError,
   FindByPkResponse,
   InitResponse,
+  UpdateResponse,
 } from "../types/responses";
 import { getModelName } from "../utils/metadata";
 import axios, { AxiosError } from "axios";
 import { convertHit } from "../utils/opensearch";
 import { extractMessage } from "../utils/errors";
-import { FindAllRequest, InitRequest } from "../types/requests";
+import { FindAllRequest, InitRequest, UpdateRequest } from "../types/requests";
 
 export class Model {
   public static setSequelize(sequelize: Sequelize) {
@@ -231,6 +233,51 @@ export class Model {
       );
 
       return response.data.hits.hits.map((hit) => convertHit(hit));
+    } catch (error) {
+      if (!(error instanceof AxiosError)) throw error;
+
+      const message = extractMessage(error.response?.data);
+      throw new Error(message);
+    }
+  }
+
+/**
+ * Update document fields with new values.
+ * 
+ * This method overwrites only those fields that were passed to values.  
+ * If you pass an object with new fields, Opensearch will merge the old object with the new one by overwriting the old values and adding new ones.
+ * ```
+ * { field1: "value1", field2: 123 } + { field2: 456, field3: "new value" } =
+ * = { field1: "value1", field2: 456, field3: "new value" }
+ * ```
+ * To **replace** an object with a new one, use the **create** method.
+ * 
+ * @param values New document values. Id is required. It used to determine which document to change.
+ */
+  public static async update<M extends Model>(
+    this: ModelStatic<M>,
+    values: UpdateObject<M>
+  ): Promise<{ index: string; id: string; result: "updated" }> {
+    try {
+      if (!Model.sequelize) throw new Error("Sequelize not found");
+
+      const { _id, ...data } = values;
+      const body: UpdateRequest = {
+        doc: data,
+      };
+
+      const indexName = getModelName(this);
+      const response = await axios.post<UpdateResponse>(
+        `${Model.host}/${indexName}/_update/${_id}`,
+        body,
+        { auth: Model.auth }
+      );
+
+      return {
+        index: response.data._index,
+        id: response.data._id,
+        result: response.data.result,
+      };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
 

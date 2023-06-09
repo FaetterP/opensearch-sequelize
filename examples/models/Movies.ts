@@ -5,4 +5,5 @@ import { Table } from "../../src/utils/decorators";
 export class Movies extends Model {
   name!: string;
   year!: number;
+  nextPart?: string;
 }

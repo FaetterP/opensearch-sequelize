@@ -65,3 +65,13 @@ export type FindAllRequest = {
   from?: number;
   size?: number;
 };
+
+export type UpdateRequest =
+  | {
+      doc: any;
+    }
+  | {
+      script: {
+        source: string;
+      };
+    };
