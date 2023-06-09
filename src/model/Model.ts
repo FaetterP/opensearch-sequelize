@@ -149,11 +149,13 @@ export class Model {
    *
    * OpenSearch automatically creates an index when you add a document to an index that doesn’t already exist.
    * It also automatically generates an _id if you don’t specify an _id in the request.
+   *
+   * You can override document using the same id. This will increase its version by 1.
    */
   public static async create<M extends Model>(
     this: ModelStatic<M>,
     values: CreatedObject<M>
-  ) {
+  ): Promise<{ index: string; id: string; version: number }> {
     try {
       const { _id, ...data } = values;
       const id = _id ? `/${_id}` : "";

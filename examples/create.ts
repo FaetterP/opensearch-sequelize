@@ -18,6 +18,15 @@ const sequelize = new Sequelize({
   const movie = await Movies.findByPk(report.id);
   console.log("movie1", movie);
 
+  // override by id
+  console.log("version before override", report.version);
+  const reportOverride = await Movies.create({
+    _id: "fixed_id",
+    name: "The Matrix",
+    year: 1999,
+  });
+  console.log("version after override", reportOverride.version);
+
   // _id is generated randomly
   const report2 = await Movies.create({
     name: "Total Recall",
