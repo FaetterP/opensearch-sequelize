@@ -82,3 +82,31 @@ export type CreateResponse = {
   _seq_no: number;
   _primary_term: number;
 };
+
+export type DeleteByPkResponse = {
+  _index: string;
+  _id: string;
+  _version: number;
+  result: "deleted";
+  _shards: {
+    total: number;
+    successful: number;
+    failed: number;
+  };
+  _seq_no: number;
+  _primary_term: number;
+};
+
+export type DestroyByPkError404 = {
+  _index: string;
+  _id: string;
+  _version: number;
+  result: "not_found";
+  _shards: {
+    total: number;
+    successful: number;
+    failed: number;
+  };
+  _seq_no: number;
+  _primary_term: number;
+};

@@ -8,6 +8,8 @@ import {
 import {
   BaseOpensearchError,
   CreateResponse,
+  DestroyByPkError404,
+  DeleteByPkResponse,
   DropResponse,
   FindAllResponse,
   FindByFkError,
@@ -144,8 +146,8 @@ export class Model {
 
   /**
    * Save the values as new document.
-   * 
-   * OpenSearch automatically creates an index when you add a document to an index that doesn’t already exist.  
+   *
+   * OpenSearch automatically creates an index when you add a document to an index that doesn’t already exist.
    * It also automatically generates an _id if you don’t specify an _id in the request.
    */
   public static async create<M extends Model>(
@@ -229,6 +231,44 @@ export class Model {
       return response.data.hits.hits.map((hit) => convertHit(hit));
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+
+      const message = extractMessage(error.response?.data);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Delete document from index by its id.
+   */
+  public static async destroyByPk<M extends Model>(
+    this: ModelStatic<M>,
+    id: string
+  ): Promise<{ index: string; id: string; result: "deleted" | "not_found" }> {
+    try {
+      if (!Model.sequelize) throw new Error("Sequelize not found");
+
+      const indexName = getModelName(this);
+      const response = await axios.delete<DeleteByPkResponse>(
+        `${Model.host}/${indexName}/_doc/${id}`,
+        { auth: Model.auth }
+      );
+
+      return {
+        index: response.data._index,
+        id: response.data._id,
+        result: response.data.result,
+      };
+    } catch (error) {
+      if (!(error instanceof AxiosError)) throw error;
+
+      if (error.status === 404) {
+        const error404 = error.response?.data as DestroyByPkError404;
+        return {
+          index: error404._index,
+          id: error404._id,
+          result: error404.result,
+        };
+      }
 
       const message = extractMessage(error.response?.data);
       throw new Error(message);
