@@ -9,3 +9,38 @@ The package is connected via npm.
 ```bash
 npm i opensearch-sequelize
 ```
+
+## Using
+
+Create model:
+
+```js
+import { Table, Model } from "opensearch-sequelize";
+
+@Table({ tableName: "movies" })
+export class Movies extends Model {
+  name!: string;
+  year!: number;
+  nextPart?: string;
+}
+```
+
+Connect:
+
+```js
+const sequelize = new Sequelize({
+  host: "https://localhost:9200",
+  username: "admin",
+  password: "admin",
+});
+```
+
+Using model:
+
+```js
+const movies = await Movies.findAll({ limit: 2, offset: 0 });
+```
+
+## Examples
+
+You can find examples of using methods [here](https://github.com/FaetterP/opensearch-sequelize/tree/main/examples).
