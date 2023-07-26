@@ -64,7 +64,18 @@ export type DynamicIndexSettingsRequest = {
 export type FindAllRequest = {
   from?: number;
   size?: number;
+  query?: {
+    bool?: {
+      must?: Query | Query[];
+      must_not?: Query | Query[];
+      should?: Query | Query[];
+      filter?: any;
+    };
+    match?: Record<string, string | number | boolean>;
+  };
 };
+
+export type Query = any;
 
 export type UpdateRequest =
   | {

@@ -74,16 +74,40 @@ export type DynamicIndexSettings = {
   };
 };
 
-export type FindAllOptions = {
+export type FindAllOptions<M extends Model> = {
   limit?: number;
   offset?: number;
+  where?: {
+    [key in keyof DataValues<M>]?: DataValues<M>[key];
+  };
 };
 
-export type CreatedObject<M extends Model> = Omit<
+// | {
+//     type: "fuzzy";
+//     value: DataValues<M>[key];
+//     fuzziness: "auto" | number;
+//     fuzzy_transpositions: boolean;
+//     fuzzy_max_expansions: number;
+//   }
+// | { type: "regex" | "wildcard"; value: string };
+
+export type DataValues<M extends M> = Omit<
   M,
   "_index" | "_id" | "_version" | "_score"
-> & { _id?: string };
+>;
+
+export type CreatedObject<M extends Model> = DataValues<M> & { _id?: string };
 
 export type UpdateObject<M extends Model> = Partial<CreatedObject<M>> & {
   _id: string;
 };
+
+export type AnalyzerType =
+  | "standard"
+  | "simple"
+  | "whitespace"
+  | "stop"
+  | "keyword"
+  | "pattern"
+  | "language"
+  | "fingerprint";

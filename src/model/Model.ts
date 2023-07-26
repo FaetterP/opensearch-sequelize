@@ -1,6 +1,7 @@
 import { Sequelize } from "../sequelize/Sequelize";
 import {
   CreatedObject,
+  DataValues,
   FindAllOptions,
   InitOptions,
   ModelStatic,
@@ -22,7 +23,12 @@ import { getModelName } from "../utils/metadata";
 import axios, { AxiosError } from "axios";
 import { convertHit } from "../utils/opensearch";
 import { extractMessage } from "../utils/errors";
-import { FindAllRequest, InitRequest, UpdateRequest } from "../types/requests";
+import {
+  FindAllRequest,
+  InitRequest,
+  Query,
+  UpdateRequest,
+} from "../types/requests";
 
 export class Model {
   public static setSequelize(sequelize: Sequelize) {
@@ -216,15 +222,45 @@ export class Model {
 
   public static async findAll<M extends Model>(
     this: ModelStatic<M>,
-    options?: FindAllOptions
+    options?: FindAllOptions<M>
   ): Promise<M[]> {
     try {
       if (!Model.sequelize) throw new Error("Sequelize not found");
 
+      let must: Query[] = [];
+
+      console.log(options);
+      for (const key in options?.where) {
+        const whereValue = options.where[
+          key as keyof DataValues<M>
+        ] as (typeof options.where)[keyof DataValues<M>];
+
+        if (typeof whereValue === "number") {
+          must.push({
+            match: {
+              [key]: whereValue,
+            },
+          });
+        } else {
+          must.push({
+            match: {
+              [`${key}.keyword`]: whereValue,
+            },
+          });
+        }
+      }
+
       const data: FindAllRequest = {
         from: options?.offset,
         size: options?.limit,
+        query: {
+          bool: {
+            must,
+          },
+        },
       };
+
+      console.log(data);
 
       const indexName = getModelName(this);
       const response = await axios.get<FindAllResponse>(
@@ -241,19 +277,19 @@ export class Model {
     }
   }
 
-/**
- * Update document fields with new values.
- * 
- * This method overwrites only those fields that were passed to values.  
- * If you pass an object with new fields, Opensearch will merge the old object with the new one by overwriting the old values and adding new ones.
- * ```
- * { field1: "value1", field2: 123 } + { field2: 456, field3: "new value" } =
- * = { field1: "value1", field2: 456, field3: "new value" }
- * ```
- * To **replace** an object with a new one, use the **create** method.
- * 
- * @param values New document values. Id is required. It used to determine which document to change.
- */
+  /**
+   * Update document fields with new values.
+   *
+   * This method overwrites only those fields that were passed to values.
+   * If you pass an object with new fields, Opensearch will merge the old object with the new one by overwriting the old values and adding new ones.
+   * ```
+   * { field1: "value1", field2: 123 } + { field2: 456, field3: "new value" } =
+   * = { field1: "value1", field2: 456, field3: "new value" }
+   * ```
+   * To **replace** an object with a new one, use the **create** method.
+   *
+   * @param values New document values. Id is required. It used to determine which document to change.
+   */
   public static async update<M extends Model>(
     this: ModelStatic<M>,
     values: UpdateObject<M>
