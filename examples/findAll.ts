@@ -10,15 +10,20 @@ const sequelize = new Sequelize({
 });
 
 (async () => {
-  const movies = await Movies.findAll({ limit: 2, offset: 0 });
-  console.log(movies);
+  // const movies = await Movies.findAll({ limit: 2, offset: 0 });
+  // console.log(movies);
 
-  const theMatrix = await Movies.findAll({ where: { name: "The Matrix" } });
-  console.log(theMatrix);
+  // const theMatrix = await Movies.findAll({ where: { name: "The Matrix" } });
+  // console.log(theMatrix);
 
-  const movies1999 = await Movies.findAll({ where: { year: 1999 } });
-  console.log(movies1999);
+  // const movies1999 = await Movies.findAll({ where: { year: 1999 } });
+  // console.log(movies1999);
 
-  const multiselectMovies = await Movies.findAll({ where: { year: 1999, name:"The Matrix" } });
-  console.log(multiselectMovies);
+  const fuzzySearch = await Movies.findAll({
+    where: {
+      name: { type: "fuzzy", value: "Matrix" },
+      year: 1999,
+    },
+  });
+  console.log(fuzzySearch);
 })();

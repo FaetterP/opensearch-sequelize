@@ -38,7 +38,14 @@ const sequelize = new Sequelize({
 Using model:
 
 ```js
-const movies = await Movies.findAll({ limit: 2, offset: 0 });
+const movies = await Movies.findAll({
+  limit: 2,
+  offset: 0,
+  where: {
+    name: { type: "fuzzy", value: "Matrix" },
+    year: 1999,
+  },
+});
 ```
 
 ## Examples

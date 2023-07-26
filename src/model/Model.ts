@@ -3,6 +3,7 @@ import {
   CreatedObject,
   DataValues,
   FindAllOptions,
+  FuzzyWhere,
   InitOptions,
   ModelStatic,
   UpdateObject,
@@ -235,7 +236,26 @@ export class Model {
           key as keyof DataValues<M>
         ] as (typeof options.where)[keyof DataValues<M>];
 
-        if (typeof whereValue === "number") {
+        if (typeof whereValue === "object") {
+          switch ((whereValue as any).type) {
+            case "exact":
+              must.push({
+                match: {
+                  [`${key}.keyword`]: whereValue,
+                },
+              });
+              break;
+            case "fuzzy":
+              const fuzzyWhere = whereValue as FuzzyWhere
+              must.push({
+                match: {
+                  [`${key}`]: { query: fuzzyWhere.value, fuzziness: "AUTO" },
+                },
+              });
+              break;
+            default:
+          }
+        } else if (typeof whereValue === "number") {
           must.push({
             match: {
               [key]: whereValue,
@@ -260,7 +280,7 @@ export class Model {
         },
       };
 
-      console.log(data);
+      console.log(JSON.stringify(data));
 
       const indexName = getModelName(this);
       const response = await axios.get<FindAllResponse>(

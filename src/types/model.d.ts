@@ -78,9 +78,20 @@ export type FindAllOptions<M extends Model> = {
   limit?: number;
   offset?: number;
   where?: {
-    [key in keyof DataValues<M>]?: DataValues<M>[key];
+    [key in keyof DataValues<M>]?:
+      | DataValues<M>[key]
+      | {
+          type: "exact";
+          value: string;
+        }
+      | FuzzyWhere
   };
 };
+
+export type FuzzyWhere = {
+  type:"fuzzy",
+  value: string,
+}
 
 // | {
 //     type: "fuzzy";
