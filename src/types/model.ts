@@ -102,7 +102,7 @@ export type FuzzyWhere = {
 //   }
 // | { type: "regex" | "wildcard"; value: string };
 
-export type DataValues<M extends M> = Omit<
+export type DataValues<M extends Model> = Omit<
   M,
   "_index" | "_id" | "_version" | "_score"
 >;
