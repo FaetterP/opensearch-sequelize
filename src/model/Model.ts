@@ -128,6 +128,8 @@ export class Model {
       return { index: response.data.index };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+      if (error.status || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       const data = error.response?.data as BaseOpensearchError;
       const message = extractMessage(data);
@@ -146,6 +148,8 @@ export class Model {
       });
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+      if (error.status || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       const data = error.response?.data as BaseOpensearchError;
       const message = extractMessage(data);
@@ -183,6 +187,8 @@ export class Model {
       };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+      if (error.status || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       const data = error.response?.data as BaseOpensearchError;
       const message = extractMessage(data);
@@ -211,6 +217,8 @@ export class Model {
       return convertHit<M>(response.data);
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+      if (error.status || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       const data = error.response?.data as FindByFkError;
       if ((error.status === 404, data.found === false)) {
@@ -291,6 +299,8 @@ export class Model {
       return response.data.hits.hits.map((hit) => convertHit(hit));
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+      if (error.status || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       const message = extractMessage(error.response?.data);
       throw new Error(message);
@@ -336,6 +346,8 @@ export class Model {
       };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+      if (error.status || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       const message = extractMessage(error.response?.data);
       throw new Error(message);
@@ -365,6 +377,8 @@ export class Model {
       };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
+      if (error.status || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       if (error.status === 404) {
         const error404 = error.response?.data as DestroyByPkError404;
