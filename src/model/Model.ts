@@ -246,7 +246,7 @@ export class Model {
               });
               break;
             case "fuzzy":
-              const fuzzyWhere = whereValue as FuzzyWhere
+              const fuzzyWhere = whereValue as FuzzyWhere;
               must.push({
                 match: {
                   [`${key}`]: { query: fuzzyWhere.value, fuzziness: "AUTO" },
@@ -378,5 +378,47 @@ export class Model {
       const message = extractMessage(error.response?.data);
       throw new Error(message);
     }
+  }
+
+  public static async queryPost(url: string, body: any) {
+    const indexName = getModelName(this);
+    const response = await axios.post<DeleteByPkResponse>(
+      `${Model.host}/${indexName}/${url}`,
+      body,
+      { auth: Model.auth }
+    );
+
+    return response;
+  }
+
+  public static async queryPut(url: string, body: any) {
+    const indexName = getModelName(this);
+    const response = await axios.put<DeleteByPkResponse>(
+      `${Model.host}/${indexName}/${url}`,
+      body,
+      { auth: Model.auth }
+    );
+
+    return response;
+  }
+
+  public static async queryGet(url: string, data: any) {
+    const indexName = getModelName(this);
+    const response = await axios.get<DeleteByPkResponse>(
+      `${Model.host}/${indexName}/${url}`,
+      { auth: Model.auth, data }
+    );
+
+    return response;
+  }
+
+  public static async queryDelete(url: string, data: any) {
+    const indexName = getModelName(this);
+    const response = await axios.delete<DeleteByPkResponse>(
+      `${Model.host}/${indexName}/${url}`,
+      { auth: Model.auth, data }
+    );
+
+    return response;
   }
 }
