@@ -1,5 +1,5 @@
 import { Model, Sequelize, Table } from "../../src";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 
 const BASE_URL = "baseurl";

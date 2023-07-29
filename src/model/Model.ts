@@ -65,6 +65,8 @@ export class Model {
     options?: InitOptions
   ) {
     try {
+      if (!Model.sequelize) throw new Error("Sequelize not found");
+
       const settingsIndex = options?.settings?.index;
       const body: InitRequest = {
         settings: {
@@ -142,7 +144,10 @@ export class Model {
    */
   public static async drop<M extends Model>(this: ModelStatic<M>) {
     try {
+      if (!Model.sequelize) throw new Error("Sequelize not found");
+
       const indexName = getModelName(this);
+      
       await axios.delete<DropResponse>(`${Model.host}/${indexName}`, {
         auth: Model.auth,
       });
@@ -170,6 +175,8 @@ export class Model {
     values: CreatedObject<M>
   ): Promise<{ index: string; id: string; version: number }> {
     try {
+      if (!Model.sequelize) throw new Error("Sequelize not found");
+
       const { _id, ...data } = values;
       const id = _id ? `/${_id}` : "";
 
