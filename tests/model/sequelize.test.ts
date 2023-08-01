@@ -10,8 +10,8 @@ class TestModel extends Model {
   numberValue!: number;
 }
 
-describe(".create | not connected", () => {
-  test("correct auth", async () => {
+describe("not connected", () => {
+  test(".create", async () => {
     const mock = new MockAdapter(axios);
     mock.onAny().reply((config) => {
       return [
@@ -35,5 +35,19 @@ describe(".create | not connected", () => {
     await expect(
       TestModel.create({ stringValue: "", numberValue: 0 })
     ).rejects.toThrow("Sequelize not found");
+  });
+
+  test(".drop", async () => {
+    const mock = new MockAdapter(axios);
+    mock.onAny().reply((config) => {
+      return [
+        200,
+        {
+          acknowledged: true,
+        },
+      ];
+    });
+
+    await expect(TestModel.drop()).rejects.toThrow("Sequelize not found");
   });
 });
