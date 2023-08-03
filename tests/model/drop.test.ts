@@ -47,7 +47,7 @@ describe(".drop | auth", () => {
       .onAny()
       .reply(404, "invalid url");
 
-    expect(TestModel.drop()).resolves.toBe(undefined);
+    await expect(TestModel.drop()).resolves.toBe(undefined);
   });
 
   test("incorrect auth", async () => {
@@ -88,7 +88,7 @@ describe(".drop | success", () => {
       .onAny()
       .reply(404, "invalid url");
 
-    expect(TestModel.drop()).resolves.toBe(undefined);
+    await expect(TestModel.drop()).resolves.toBe(undefined);
   });
 
   test("success response (nonexistent index)", async () => {
@@ -119,7 +119,7 @@ describe(".drop | success", () => {
       .onAny()
       .reply(404, "invalid url");
 
-    expect(TestModelNonexistent.drop()).rejects.toThrow(
+    await expect(TestModelNonexistent.drop()).rejects.toThrow(
       `no such index [${TABLE_NAME_NONEXISTENT}]`
     );
   });

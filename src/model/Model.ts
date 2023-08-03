@@ -227,12 +227,14 @@ export class Model {
       if (error.status || error.response?.status === 401)
         throw new Error("Unauthorized");
 
-      const data = error.response?.data as FindByFkError;
-      if ((error.status === 404, data.found === false)) {
+      const notFoundIdData = error.response?.data as FindByFkError;
+      if ((error.status === 404, notFoundIdData.found === false)) {
         return undefined;
       }
 
-      throw new Error(error.message);
+      const baseErrorData = error.response?.data as BaseOpensearchError;
+      const message = extractMessage(baseErrorData);
+      throw new Error(message);
     }
   }
 
