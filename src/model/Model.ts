@@ -58,7 +58,7 @@ export class Model {
   /**
    * Create index with static or dynamic options.
    *
-   * Read more: https://opensearch.org/docs/1.3/api-reference/index-apis/create-index/
+   * Read more: https://opensearch.org/docs/latest/im-plugin/index-settings/
    */
   public static async init<M extends Model>(
     this: ModelStatic<M>,
@@ -112,7 +112,7 @@ export class Model {
               rebalance: { enable: settingsIndex?.routing?.rebalance?.enable },
             },
             gc_deletes: settingsIndex?.gcDeletes,
-            default_pipeline: settingsIndex?.defaultField,
+            default_pipeline: settingsIndex?.defaultPipeline,
             final_pipeline: settingsIndex?.finalPipeline,
           },
         },
@@ -247,7 +247,6 @@ export class Model {
 
       let must: Query[] = [];
 
-      console.log(options);
       for (const key in options?.where) {
         const whereValue = options.where[
           key as keyof DataValues<M>
@@ -296,8 +295,6 @@ export class Model {
           },
         },
       };
-
-      console.log(JSON.stringify(data));
 
       const indexName = getModelName(this);
       const response = await axios.get<FindAllResponse>(

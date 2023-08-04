@@ -24,7 +24,8 @@ export type StaticIndexSettingsRequest = {
     shard: {
       check_on_startup: boolean | "checksum";
     };
-    codec: "default" | "best_compression";
+    codec: "default" | "best_compression" | "zstd" | "zstd_no_dict";
+    "codec.compression_level": number;
     routing_partition_size: number;
     soft_deletes: { retention_lease: { period: string } };
     load_fixed_bitset_filters_eagerly: boolean;
@@ -50,14 +51,14 @@ export type DynamicIndexSettingsRequest = {
     highlight: { max_analyzed_offset: number };
     max_terms_count: number;
     max_regex_length: number;
-    default_field: string /* TODO */;
+    default_field: string | string[];
     routing: {
-      allocation: { enable: unknown };
+      allocation: { enable: "all" | "primaries" | "new_primaries" | "none" };
       rebalance: { enable: "all" | "primaries" | "replicas" | "none" };
     };
     gc_deletes: string;
-    default_pipeline: unknown /* TODO */;
-    final_pipeline: unknown /* TODO */;
+    default_pipeline: string | "_none";
+    final_pipeline: string | "_none";
   };
 };
 

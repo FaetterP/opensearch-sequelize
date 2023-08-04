@@ -63,14 +63,14 @@ export type DynamicIndexSettings = {
     highlight: { maxAnalyzedOffset: number };
     maxTermsCount: number;
     maxRegexLength: number;
-    defaultField: string /* TODO */;
+    defaultField: string | string[];
     routing: {
-      allocation: { enable: unknown } /* TODO */;
+      allocation: { enable: "all" | "primaries" | "new_primaries" | "none" };
       rebalance: { enable: "all" | "primaries" | "replicas" | "none" };
     };
     gcDeletes: string;
-    defaultPipeline: unknown /* TODO */;
-    finalPipeline: unknown /* TODO */;
+    defaultPipeline: string | "_none";
+    finalPipeline: string | "_none";
   };
 };
 
