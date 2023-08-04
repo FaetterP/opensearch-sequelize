@@ -1,4 +1,4 @@
-import { Model, Table } from "../../src";
+import { Model, Sequelize, Table } from "../../src";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 

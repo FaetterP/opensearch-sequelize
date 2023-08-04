@@ -33,7 +33,7 @@ import {
 
 export class Model {
   public static setSequelize(sequelize: Sequelize) {
-    if (Model.sequelize) throw new Error("sequelize already exists");
+    if (Model.sequelize) throw new Error("Sequelize already exists");
 
     Model.sequelize = sequelize;
     Model.host = sequelize.options.host;
