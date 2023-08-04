@@ -13,24 +13,7 @@ class TestModel extends Model {
 describe("not connected", () => {
   test(".create", async () => {
     const mock = new MockAdapter(axios);
-    mock.onAny().reply((config) => {
-      return [
-        200,
-        {
-          _index: "",
-          _id: "",
-          _version: 1,
-          result: "created",
-          _shards: {
-            total: 2,
-            successful: 2,
-            failed: 0,
-          },
-          _seq_no: 23,
-          _primary_term: 7,
-        },
-      ];
-    });
+    mock.onAny().reply(404, "invalid url");
 
     await expect(
       TestModel.create({ stringValue: "", numberValue: 0 })
@@ -39,49 +22,58 @@ describe("not connected", () => {
 
   test(".drop", async () => {
     const mock = new MockAdapter(axios);
-    mock.onAny().reply((config) => {
-      return [
-        200,
-        {
-          acknowledged: true,
-        },
-      ];
-    });
+    mock.onAny().reply(404, "invalid url");
 
     await expect(TestModel.drop()).rejects.toThrow("Sequelize not found");
   });
 
   test(".findByPk", async () => {
-    const id = "id";
-
     const mock = new MockAdapter(axios);
-    mock.onAny().reply((config) => {
-      return [
-        200,
-        {
-          _index: TABLE_NAME,
-          _id: id,
-          _version: "version",
-          _seq_no: 17,
-          _primary_term: 3,
-          found: true,
-          _source: {
-            stringValue: "",
-            numberValue: 0,
-          },
-        },
-      ];
-    });
+    mock.onAny().reply(404, "invalid url");
 
-    await expect(TestModel.findByPk(id)).rejects.toThrow("Sequelize not found");
+    await expect(TestModel.findByPk("")).rejects.toThrow("Sequelize not found");
   });
 
   test(".init", async () => {
     const mock = new MockAdapter(axios);
-    mock.onAny().reply((config) => {
-      return [200, {}];
-    });
+    mock.onAny().reply(404, "invalid url");
 
     await expect(TestModel.init()).rejects.toThrow("Sequelize not found");
+  });
+
+  test(".queryGet", async () => {
+    const mock = new MockAdapter(axios);
+    mock.onAny().reply(404, "invalid url");
+
+    await expect(TestModel.queryGet("", {})).rejects.toThrow(
+      "Sequelize not found"
+    );
+  });
+
+  test(".queryPut", async () => {
+    const mock = new MockAdapter(axios);
+    mock.onAny().reply(404, "invalid url");
+
+    await expect(TestModel.queryPut("", {})).rejects.toThrow(
+      "Sequelize not found"
+    );
+  });
+
+  test(".queryPost", async () => {
+    const mock = new MockAdapter(axios);
+    mock.onAny().reply(404, "invalid url");
+
+    await expect(TestModel.queryPost("", {})).rejects.toThrow(
+      "Sequelize not found"
+    );
+  });
+
+  test(".queryDelete", async () => {
+    const mock = new MockAdapter(axios);
+    mock.onAny().reply(404, "invalid url");
+
+    await expect(TestModel.queryDelete("", {})).rejects.toThrow(
+      "Sequelize not found"
+    );
   });
 });

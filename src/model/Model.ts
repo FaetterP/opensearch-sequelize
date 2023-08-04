@@ -153,7 +153,7 @@ export class Model {
       });
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
-      if (error.status || error.response?.status === 401)
+      if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
       const data = error.response?.data as BaseOpensearchError;
@@ -194,7 +194,7 @@ export class Model {
       };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
-      if (error.status || error.response?.status === 401)
+      if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
       const data = error.response?.data as BaseOpensearchError;
@@ -224,7 +224,7 @@ export class Model {
       return convertHit<M>(response.data);
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
-      if (error.status || error.response?.status === 401)
+      if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
       const notFoundIdData = error.response?.data as FindByFkError;
@@ -305,7 +305,7 @@ export class Model {
       return response.data.hits.hits.map((hit) => convertHit(hit));
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
-      if (error.status || error.response?.status === 401)
+      if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
       const message = extractMessage(error.response?.data);
@@ -352,7 +352,7 @@ export class Model {
       };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
-      if (error.status || error.response?.status === 401)
+      if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
       const message = extractMessage(error.response?.data);
@@ -383,7 +383,7 @@ export class Model {
       };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
-      if (error.status || error.response?.status === 401)
+      if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
       if (error.status === 404) {
@@ -400,45 +400,81 @@ export class Model {
     }
   }
 
+  /**
+   * Raw POST request. Use this if the other methods don't provide the necessary functionality.
+   *
+   * `TestModel.queryPost("_doc/1", {...values})` is POST request to host/index/`_doc/1` with body {...values}.
+   *
+   * @returns raw response or AxiosError.
+   */
   public static async queryPost(url: string, body: any) {
+    if (!Model.sequelize) throw new Error("Sequelize not found");
+
     const indexName = getModelName(this);
-    const response = await axios.post<DeleteByPkResponse>(
+    const response = await axios.post(
       `${Model.host}/${indexName}/${url}`,
       body,
       { auth: Model.auth }
     );
 
-    return response;
+    return response.data;
   }
 
+  /**
+   * Raw PUT request. Use this if the other methods don't provide the necessary functionality.
+   *
+   * `TestModel.queryPut("_doc/1", {...values})` is PUT request to host/index/`_doc/1` with body {...values}.
+   *
+   * @returns raw response or AxiosError.
+   */
   public static async queryPut(url: string, body: any) {
+    if (!Model.sequelize) throw new Error("Sequelize not found");
+
     const indexName = getModelName(this);
-    const response = await axios.put<DeleteByPkResponse>(
+    const response = await axios.put(
       `${Model.host}/${indexName}/${url}`,
       body,
       { auth: Model.auth }
     );
 
-    return response;
+    return response.data;
   }
 
+  /**
+   * Raw GET request. Use this if the other methods don't provide the necessary functionality.
+   *
+   * `TestModel.queryGet("_doc/1", {...values})` is GET request to host/index/`_doc/1` with body {...values}.
+   *
+   * @returns raw response or AxiosError.
+   */
   public static async queryGet(url: string, data: any) {
-    const indexName = getModelName(this);
-    const response = await axios.get<DeleteByPkResponse>(
-      `${Model.host}/${indexName}/${url}`,
-      { auth: Model.auth, data }
-    );
+    if (!Model.sequelize) throw new Error("Sequelize not found");
 
-    return response;
+    const indexName = getModelName(this);
+    const response = await axios.get(`${Model.host}/${indexName}/${url}`, {
+      auth: Model.auth,
+      data,
+    });
+
+    return response.data;
   }
 
+  /**
+   * Raw DELETE request. Use this if the other methods don't provide the necessary functionality.
+   *
+   * `TestModel.queryDelete("_doc/1", {...values})` is DELETE request to host/index/`_doc/1` with body {...values}.
+   *
+   * @returns raw response or AxiosError.
+   */
   public static async queryDelete(url: string, data: any) {
-    const indexName = getModelName(this);
-    const response = await axios.delete<DeleteByPkResponse>(
-      `${Model.host}/${indexName}/${url}`,
-      { auth: Model.auth, data }
-    );
+    if (!Model.sequelize) throw new Error("Sequelize not found");
 
-    return response;
+    const indexName = getModelName(this);
+    const response = await axios.delete(`${Model.host}/${indexName}/${url}`, {
+      auth: Model.auth,
+      data,
+    });
+
+    return response.data;
   }
 }
