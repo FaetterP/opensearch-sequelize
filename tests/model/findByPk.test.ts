@@ -31,7 +31,7 @@ class TestModelNonexistent extends Model {
 class TestModelEmpty extends Model {}
 
 describe(".findByPk | auth", () => {
-  test("correct auth", async () => {
+  test("success | correct auth", async () => {
     const id = "id";
     const version = 4;
     const stringValue = "stringValue";
@@ -76,7 +76,7 @@ describe(".findByPk | auth", () => {
     });
   });
 
-  test("incorrect auth", async () => {
+  test("error | incorrect auth", async () => {
     const id = "id";
     const version = 4;
     const stringValue = "stringValue";
@@ -118,7 +118,7 @@ describe(".findByPk | auth", () => {
 });
 
 describe(".findByPk | success", () => {
-  test("success response", async () => {
+  test("success | existing id", async () => {
     const id = "id";
     const version = 4;
     const stringValue = "stringValue";
@@ -154,7 +154,7 @@ describe(".findByPk | success", () => {
     });
   });
 
-  test("nonexistent id", async () => {
+  test("success | nonexistent id", async () => {
     const id = "nonexistent_id";
 
     const mock = new MockAdapter(axios);
@@ -171,7 +171,7 @@ describe(".findByPk | success", () => {
     await expect(TestModel.findByPk(id)).resolves.toBe(undefined);
   });
 
-  test("success response (nonexistent index)", async () => {
+  test("error | nonexistent index", async () => {
     const id = "id";
 
     const mock = new MockAdapter(axios);
@@ -206,7 +206,7 @@ describe(".findByPk | success", () => {
     );
   });
 
-  test("success response (empty model)", async () => {
+  test("success | empty model", async () => {
     const id = "id";
     const version = 4;
 

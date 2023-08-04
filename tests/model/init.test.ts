@@ -6,7 +6,6 @@ const BASE_URL = "baseurl";
 const USERNAME = "username";
 const PASSWORD = "password";
 const TABLE_NAME = "testTableName";
-const TABLE_NAME_NONEXISTENT = "testTableNameNonexistent";
 
 new Sequelize({
   host: BASE_URL,
@@ -20,17 +19,11 @@ class TestModel extends Model {
   numberValue!: number;
 }
 
-@Table({ tableName: TABLE_NAME_NONEXISTENT })
-class TestModelNonexistent extends Model {
-  stringValue!: string;
-  numberValue!: number;
-}
-
-describe(".drop | auth", () => {
+describe(".init | auth", () => {
   test("success | correct auth", async () => {
     const mock = new MockAdapter(axios);
     mock
-      .onDelete(`${BASE_URL}/${TABLE_NAME}`)
+      .onPut(`${BASE_URL}/${TABLE_NAME}`)
       .reply((config) => {
         const auth = config.auth;
 
@@ -41,19 +34,22 @@ describe(".drop | auth", () => {
           200,
           {
             acknowledged: true,
+            shards_acknowledged: true,
+            index: TABLE_NAME,
           },
         ];
       })
       .onAny()
       .reply(404, "invalid url");
 
-    await expect(TestModel.drop()).resolves.toBe(undefined);
+    const result = await TestModel.init();
+    expect(result).toEqual({ index: TABLE_NAME });
   });
 
   test("error | incorrect auth", async () => {
     const mock = new MockAdapter(axios);
     mock
-      .onDelete(`${BASE_URL}/${TABLE_NAME}`)
+      .onPut(`${BASE_URL}/${TABLE_NAME}`)
       .reply((config) => {
         const auth = config.auth;
 
@@ -67,60 +63,65 @@ describe(".drop | auth", () => {
           200,
           {
             acknowledged: true,
+            shards_acknowledged: true,
+            index: TABLE_NAME,
           },
         ];
       })
       .onAny()
       .reply(404, "invalid url");
 
-    await expect(TestModel.drop()).rejects.toThrow("Unauthorized");
+    await expect(TestModel.init()).rejects.toThrow("Unauthorized");
   });
 });
 
-describe(".drop | success", () => {
-  test("success response", async () => {
+describe(".init | success", () => {
+  test("success | empty response", async () => {
     const mock = new MockAdapter(axios);
     mock
-      .onDelete(`${BASE_URL}/${TABLE_NAME}`)
+      .onPut(`${BASE_URL}/${TABLE_NAME}`)
       .reply(200, {
         acknowledged: true,
+        shards_acknowledged: true,
+        index: TABLE_NAME,
       })
       .onAny()
       .reply(404, "invalid url");
 
-    await expect(TestModel.drop()).resolves.toBe(undefined);
+    const result = await TestModel.init({});
+
+    expect(result).toEqual({
+      index: TABLE_NAME,
+    });
   });
 
-  test("success response (nonexistent index)", async () => {
+  test("error | not create existed index", async () => {
+    const indexId = "hcQE_TLjQAWHwcoQ_nQ0ww";
     const mock = new MockAdapter(axios);
     mock
-      .onDelete(`${BASE_URL}/${TABLE_NAME_NONEXISTENT}`)
-      .reply(404, {
+      .onPut(`${BASE_URL}/${TABLE_NAME}`)
+      .reply(400, {
         error: {
           root_cause: [
             {
-              type: "index_not_found_exception",
-              reason: `no such index [${TABLE_NAME_NONEXISTENT}]`,
-              index: TABLE_NAME_NONEXISTENT,
-              "resource.id": TABLE_NAME_NONEXISTENT,
-              "resource.type": "index_or_alias",
-              index_uuid: "_na_",
+              type: "resource_already_exists_exception",
+              reason: `index [${TABLE_NAME}/${indexId}] already exists`,
+              index: TABLE_NAME,
+              index_uuid: indexId,
             },
           ],
-          type: "index_not_found_exception",
-          reason: `no such index [${TABLE_NAME_NONEXISTENT}]`,
-          index: TABLE_NAME_NONEXISTENT,
-          "resource.id": TABLE_NAME_NONEXISTENT,
-          "resource.type": "index_or_alias",
-          index_uuid: "_na_",
+          type: "resource_already_exists_exception",
+          reason: `index [${TABLE_NAME}/${indexId}] already exists`,
+          index: TABLE_NAME,
+          index_uuid: indexId,
         },
-        status: 404,
+        status: 400,
       })
       .onAny()
       .reply(404, "invalid url");
 
-    await expect(TestModelNonexistent.drop()).rejects.toThrow(
-      `no such index [${TABLE_NAME_NONEXISTENT}]`
+    await expect(TestModel.init()).rejects.toThrow(
+      `index [${TABLE_NAME}/${indexId}] already exists`
     );
   });
 });

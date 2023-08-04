@@ -75,4 +75,13 @@ describe("not connected", () => {
 
     await expect(TestModel.findByPk(id)).rejects.toThrow("Sequelize not found");
   });
+
+  test(".init", async () => {
+    const mock = new MockAdapter(axios);
+    mock.onAny().reply((config) => {
+      return [200, {}];
+    });
+
+    await expect(TestModel.init()).rejects.toThrow("Sequelize not found");
+  });
 });

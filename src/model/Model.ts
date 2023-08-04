@@ -58,7 +58,7 @@ export class Model {
   /**
    * Create index with static or dynamic options.
    *
-   * Read more: https://opensearch.org/docs/latest/api-reference/index-apis/create-index/
+   * Read more: https://opensearch.org/docs/1.3/api-reference/index-apis/create-index/
    */
   public static async init<M extends Model>(
     this: ModelStatic<M>,
@@ -130,7 +130,7 @@ export class Model {
       return { index: response.data.index };
     } catch (error) {
       if (!(error instanceof AxiosError)) throw error;
-      if (error.status || error.response?.status === 401)
+      if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
       const data = error.response?.data as BaseOpensearchError;
@@ -147,7 +147,7 @@ export class Model {
       if (!Model.sequelize) throw new Error("Sequelize not found");
 
       const indexName = getModelName(this);
-      
+
       await axios.delete<DropResponse>(`${Model.host}/${indexName}`, {
         auth: Model.auth,
       });

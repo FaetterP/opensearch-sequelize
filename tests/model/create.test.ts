@@ -31,7 +31,7 @@ class TestModelNonexistent extends Model {
 class TestModelEmpty extends Model {}
 
 describe(".create | auth", () => {
-  test("correct auth", async () => {
+  test("success | correct auth", async () => {
     const index = "index";
     const id = "id";
     const version = "version";
@@ -69,7 +69,7 @@ describe(".create | auth", () => {
     expect(result).toEqual({ id, index, version });
   });
 
-  test("incorrect auth", async () => {
+  test("error | incorrect auth", async () => {
     const index = "index";
     const id = "id";
     const version = "version";
@@ -113,7 +113,7 @@ describe(".create | auth", () => {
 });
 
 describe(".create | success", () => {
-  test("success response", async () => {
+  test("success | random id", async () => {
     const index = "index";
     const id = "id";
     const version = "version";
@@ -142,7 +142,7 @@ describe(".create | success", () => {
     expect(result).toEqual({ id, index, version });
   });
 
-  test("success response with fixed id", async () => {
+  test("success | fixed id", async () => {
     const index = "index";
     const id = "fixed_id";
     const version = "version";
@@ -175,7 +175,7 @@ describe(".create | success", () => {
     expect(result).toEqual({ id, index, version });
   });
 
-  test("success response (nonexistent index)", async () => {
+  test("success | nonexistent index", async () => {
     const index = "index";
     const id = "id";
     const version = "version";
@@ -207,7 +207,7 @@ describe(".create | success", () => {
     expect(result).toEqual({ id, index, version });
   });
 
-  test("success response with fixed id (nonexistent index)", async () => {
+  test("success | fixed id, nonexistent index", async () => {
     const index = "index";
     const id = "fixed_id";
     const version = "version";
@@ -240,7 +240,7 @@ describe(".create | success", () => {
     expect(result).toEqual({ id, index, version });
   });
 
-  test("success response (empty model)", async () => {
+  test("success | empty model", async () => {
     const index = "index";
     const id = "id";
     const version = "version";
@@ -269,7 +269,7 @@ describe(".create | success", () => {
     expect(result).toEqual({ id, index, version });
   });
 
-  test("success response with fixed id (empty model)", async () => {
+  test("success | fixed id, empty model", async () => {
     const index = "index";
     const id = "fixed_id";
     const version = "version";
