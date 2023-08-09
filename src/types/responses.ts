@@ -124,3 +124,21 @@ export type UpdateResponse = {
   _seq_no: number;
   _primary_term: number;
 };
+
+export type DeleteByQueryResponse = {
+  took: number;
+  timed_out: false;
+  total: number;
+  deleted: number;
+  batches: number;
+  version_conflicts: number;
+  noops: number;
+  retries: {
+    bulk: number;
+    search: number;
+  };
+  throttled_millis: number;
+  requests_per_second: number;
+  throttled_until_millis: number;
+  failures: any[]; // TODO
+};

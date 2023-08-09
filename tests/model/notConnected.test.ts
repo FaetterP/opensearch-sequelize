@@ -76,4 +76,11 @@ describe("not connected", () => {
       "Sequelize not found"
     );
   });
+
+  test(".truncate", async () => {
+    const mock = new MockAdapter(axios);
+    mock.onAny().reply(404, "invalid url");
+
+    await expect(TestModel.truncate()).rejects.toThrow("Sequelize not found");
+  });
 });

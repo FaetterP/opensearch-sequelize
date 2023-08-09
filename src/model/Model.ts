@@ -19,6 +19,7 @@ import {
   FindByPkResponse,
   InitResponse,
   UpdateResponse,
+  DeleteByQueryResponse,
 } from "../types/responses";
 import { getModelName } from "../utils/metadata";
 import axios, { AxiosError } from "axios";
@@ -394,6 +395,41 @@ export class Model {
           result: error404.result,
         };
       }
+
+      const message = extractMessage(error.response?.data);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Delete all documents from index.
+   * 
+   * @returns count of deleted documents.
+   */
+  public static async truncate<M extends Model>(
+    this: ModelStatic<M>
+  ): Promise<{ count: number }> {
+    try {
+      if (!Model.sequelize) throw new Error("Sequelize not found");
+
+      const indexName = getModelName(this);
+      const response = await axios.post<DeleteByQueryResponse>(
+        `${Model.host}/${indexName}/_delete_by_query`,
+        {
+          query: {
+            match_all: {},
+          },
+        },
+        { auth: Model.auth }
+      );
+
+      return {
+        count: response.data.deleted,
+      };
+    } catch (error) {
+      if (!(error instanceof AxiosError)) throw error;
+      if (error.status === 401 || error.response?.status === 401)
+        throw new Error("Unauthorized");
 
       const message = extractMessage(error.response?.data);
       throw new Error(message);
