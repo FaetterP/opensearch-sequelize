@@ -77,21 +77,23 @@ export type DynamicIndexSettings = {
 export type FindAllOptions<M extends Model> = {
   limit?: number;
   offset?: number;
-  where?: {
-    [key in keyof DataValues<M>]?:
-      | DataValues<M>[key]
-      | {
-          type: "exact";
-          value: string;
-        }
-      | FuzzyWhere
-  };
+  where?: WhereType<M>;
+};
+
+export type WhereType<M extends Model = Model> = {
+  [key in keyof DataValues<M>]?:
+    | DataValues<M>[key]
+    | {
+        type: "exact";
+        value: string;
+      }
+    | FuzzyWhere;
 };
 
 export type FuzzyWhere = {
-  type:"fuzzy",
-  value: string,
-}
+  type: "fuzzy";
+  value: string;
+};
 
 // | {
 //     type: "fuzzy";
@@ -102,7 +104,7 @@ export type FuzzyWhere = {
 //   }
 // | { type: "regex" | "wildcard"; value: string };
 
-export type DataValues<M extends Model> = Omit<
+export type DataValues<M extends Model = Model> = Omit<
   M,
   "_index" | "_id" | "_version" | "_score"
 >;

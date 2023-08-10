@@ -1,4 +1,6 @@
+import { Model } from "../model/Model";
 import { DeepPartial } from "../utils/DeepPartial";
+import { DataValues } from "./model";
 
 export type InitRequest = DeepPartial<{
   settings: IndexSettingsRequest;
@@ -76,7 +78,59 @@ export type FindAllRequest = {
   };
 };
 
-export type Query = any;
+export type Query<M extends Model = Model> = {
+  match?: {
+    [key in keyof DataValues<M>]:
+      | DataValues<M>[key]
+      | {
+          query: "wind";
+          allow_leading_wildcard?: boolean;
+          analyze_wildcard?: boolean;
+
+          fuzziness?: "AUTO" | number;
+          fuzzy_transpositions?: boolean;
+          fuzzy_max_expansions?: number;
+
+          boost?: number;
+          enable_position_increments?: boolean;
+          fields?: string[];
+          flags?: string;
+          lenient?: boolean;
+          low_freq_operator?: "and" | "or";
+          max_determinized_states?: number;
+          max_expansions?: number;
+          minimum_should_match?: number;
+          operator?: "and" | "or";
+          phrase_slop?: number;
+          prefix_length?: number;
+          quote_field_suffix?: string;
+          rewrite?:
+            | "constant_score"
+            | "scoring_boolean"
+            | "constant_score_boolean"
+            | "top_terms_N"
+            | "top_terms_boost_N"
+            | "top_terms_blended_freqs_N";
+          slop?: number;
+          tie_breaker?: number;
+          time_zone?: string;
+          type?:
+            | "best_fields"
+            | "most_fields"
+            | "cross_fields"
+            | "phrase"
+            | "phrase_prefix";
+          zero_terms_query?: "none" | "all";
+        };
+  };
+  match_all?: { [key: string]: never };
+  bool?: {
+    must?: Query | Query[];
+    must_not?: Query | Query[];
+    should?: Query;
+    filter?: Query;
+  };
+};
 
 export type UpdateRequest =
   | {

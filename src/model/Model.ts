@@ -1,9 +1,7 @@
 import { Sequelize } from "../sequelize/Sequelize";
 import {
   CreatedObject,
-  DataValues,
   FindAllOptions,
-  FuzzyWhere,
   InitOptions,
   ModelStatic,
   UpdateObject,
@@ -15,7 +13,7 @@ import {
   DeleteByPkResponse,
   DropResponse,
   FindAllResponse,
-  FindByFkError,
+  FindByPkError,
   FindByPkResponse,
   InitResponse,
   UpdateResponse,
@@ -23,7 +21,7 @@ import {
 } from "../types/responses";
 import { getModelName } from "../utils/metadata";
 import axios, { AxiosError } from "axios";
-import { convertHit } from "../utils/opensearch";
+import { convertHit, convertWhereToQuery } from "../utils/opensearch";
 import { extractMessage } from "../utils/errors";
 import {
   FindAllRequest,
@@ -228,7 +226,7 @@ export class Model {
       if (error.status === 401 || error.response?.status === 401)
         throw new Error("Unauthorized");
 
-      const notFoundIdData = error.response?.data as FindByFkError;
+      const notFoundIdData = error.response?.data as FindByPkError;
       if ((error.status === 404, notFoundIdData.found === false)) {
         return undefined;
       }
@@ -246,55 +244,15 @@ export class Model {
     try {
       if (!Model.sequelize) throw new Error("Sequelize not found");
 
-      let must: Query[] = [];
-
-      for (const key in options?.where) {
-        const whereValue = options.where[
-          key as keyof DataValues<M>
-        ] as (typeof options.where)[keyof DataValues<M>];
-
-        if (typeof whereValue === "object") {
-          switch ((whereValue as any).type) {
-            case "exact":
-              must.push({
-                match: {
-                  [`${key}.keyword`]: whereValue,
-                },
-              });
-              break;
-            case "fuzzy":
-              const fuzzyWhere = whereValue as FuzzyWhere;
-              must.push({
-                match: {
-                  [`${key}`]: { query: fuzzyWhere.value, fuzziness: "AUTO" },
-                },
-              });
-              break;
-            default:
-          }
-        } else if (typeof whereValue === "number") {
-          must.push({
-            match: {
-              [key]: whereValue,
-            },
-          });
-        } else {
-          must.push({
-            match: {
-              [`${key}.keyword`]: whereValue,
-            },
-          });
-        }
+      let query: Query | undefined = undefined;
+      if (options?.where) {
+        query = convertWhereToQuery(options?.where);
       }
 
       const data: FindAllRequest = {
         from: options?.offset,
         size: options?.limit,
-        query: {
-          bool: {
-            must,
-          },
-        },
+        query,
       };
 
       const indexName = getModelName(this);
@@ -403,7 +361,7 @@ export class Model {
 
   /**
    * Delete all documents from index.
-   * 
+   *
    * @returns count of deleted documents.
    */
   public static async truncate<M extends Model>(
@@ -441,7 +399,7 @@ export class Model {
    *
    * `TestModel.queryPost("_doc/1", {...values})` is POST request to host/index/`_doc/1` with body {...values}.
    *
-   * @returns raw response or AxiosError.
+   * @returns raw response *data*.
    */
   public static async queryPost(url: string, body: any) {
     if (!Model.sequelize) throw new Error("Sequelize not found");
@@ -461,7 +419,7 @@ export class Model {
    *
    * `TestModel.queryPut("_doc/1", {...values})` is PUT request to host/index/`_doc/1` with body {...values}.
    *
-   * @returns raw response or AxiosError.
+   * @returns raw response *data*.
    */
   public static async queryPut(url: string, body: any) {
     if (!Model.sequelize) throw new Error("Sequelize not found");
@@ -481,7 +439,7 @@ export class Model {
    *
    * `TestModel.queryGet("_doc/1", {...values})` is GET request to host/index/`_doc/1` with body {...values}.
    *
-   * @returns raw response or AxiosError.
+   * @returns raw response *data*.
    */
   public static async queryGet(url: string, data: any) {
     if (!Model.sequelize) throw new Error("Sequelize not found");
@@ -500,7 +458,7 @@ export class Model {
    *
    * `TestModel.queryDelete("_doc/1", {...values})` is DELETE request to host/index/`_doc/1` with body {...values}.
    *
-   * @returns raw response or AxiosError.
+   * @returns raw response *data*.
    */
   public static async queryDelete(url: string, data: any) {
     if (!Model.sequelize) throw new Error("Sequelize not found");

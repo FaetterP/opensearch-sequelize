@@ -34,7 +34,7 @@ export type FindByPkResponse<M> = {
   _source: M;
 };
 
-export type FindByFkError = {
+export type FindByPkError = {
   _index: string;
   _id: string;
   found: false;
