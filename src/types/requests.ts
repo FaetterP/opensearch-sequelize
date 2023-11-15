@@ -123,12 +123,24 @@ export type Query<M extends Model = Model> = {
           zero_terms_query?: "none" | "all";
         };
   };
+
   match_all?: { [key: string]: never };
+
   bool?: {
     must?: Query | Query[];
     must_not?: Query | Query[];
-    should?: Query;
+    should?: Query | Query[];
     filter?: Query;
+  };
+
+  range?: {
+    [key in keyof DataValues<M>]?: {
+      gt?: string | number;
+      lt?: string | number;
+      gte?: string | number;
+      lte?: string | number;
+      format?: string;
+    };
   };
 };
 

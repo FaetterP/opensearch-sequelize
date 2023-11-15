@@ -1,3 +1,4 @@
+import { Op } from "../src/model/operators";
 import { Sequelize } from "../src/sequelize/Sequelize";
 import { Movies } from "./models/Movies";
 
@@ -19,10 +20,19 @@ const sequelize = new Sequelize({
   // const movies1999 = await Movies.findAll({ where: { year: 1999 } });
   // console.log(movies1999);
 
+  // const fuzzySearch = await Movies.findAll({
+  //   where: {
+  //     name: { type: "fuzzy", value: "Matrix" },
+  //     year: 1999,
+  //   },
+  // });
+  // console.log(fuzzySearch);
+
   const fuzzySearch = await Movies.findAll({
     where: {
-      name: { type: "fuzzy", value: "Matrix" },
-      year: 1999,
+      year: {
+        [Op.gt]: 1901,
+      },
     },
   });
   console.log(fuzzySearch);

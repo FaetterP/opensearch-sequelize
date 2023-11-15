@@ -1,5 +1,6 @@
 import { Model } from "../model/Model";
 import { DeepPartial } from "../utils/DeepPartial";
+import { Op } from "../model/operators";
 
 export type IndexOptions = {
   tableName?: string;
@@ -87,12 +88,21 @@ export type WhereType<M extends Model = Model> = {
         type: "exact";
         value: string;
       }
-    | FuzzyWhere;
+    | FuzzyWhere
+    | RangeWhere;
 };
 
 export type FuzzyWhere = {
   type: "fuzzy";
   value: string;
+};
+
+export type RangeWhere = {
+  [Op.gt]?: number | string;
+  [Op.gte]?: number | string;
+  [Op.lt]?: number | string;
+  [Op.lte]?: number | string;
+  format?: string;
 };
 
 // | {
