@@ -100,6 +100,11 @@ export type ExactWhere = {
 export type FuzzyWhere = {
   type: "fuzzy";
   value: string;
+  fuzziness?: number | "AUTO";
+  maxExpansions?: number;
+  prefixLength?: number;
+  rewrite?: RewriteValues;
+  transpositions?: boolean;
 };
 
 export type RangeWhere = {
@@ -125,13 +130,7 @@ export type RegexWhere = (
   caseInsensitive?: boolean;
   flags?: string;
   maxDeterminizedStates?: number;
-  rewrite?:
-    | "constant_score"
-    | "scoring_boolean"
-    | "constant_score_boolean"
-    | "top_terms_N"
-    | "top_terms_boost_N"
-    | "top_terms_blended_freqs_N";
+  rewrite?: RewriteValues;
 };
 
 export type WildcardWhere = (
@@ -145,13 +144,7 @@ export type WildcardWhere = (
 ) & {
   caseInsensitive?: boolean;
   boost?: number;
-  rewrite?:
-    | "constant_score"
-    | "scoring_boolean"
-    | "constant_score_boolean"
-    | "top_terms_N"
-    | "top_terms_boost_N"
-    | "top_terms_blended_freqs_N";
+  rewrite?: RewriteValues;
 };
 
 // | {
@@ -174,7 +167,7 @@ export type UpdateObject<M extends Model> = Partial<CreatedObject<M>> & {
   _id: string;
 };
 
-export type AnalyzerType =
+export type AnalyzerValues =
   | "standard"
   | "simple"
   | "whitespace"
@@ -183,3 +176,11 @@ export type AnalyzerType =
   | "pattern"
   | "language"
   | "fingerprint";
+
+export type RewriteValues =
+  | "constant_score"
+  | "scoring_boolean"
+  | "constant_score_boolean"
+  | "top_terms_N"
+  | "top_terms_boost_N"
+  | "top_terms_blended_freqs_N";

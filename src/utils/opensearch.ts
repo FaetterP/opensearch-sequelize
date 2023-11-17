@@ -44,8 +44,15 @@ export function convertWhereToQuery<M extends Model = Model>(
           case "fuzzy":
             const fuzzyWhere = whereValue as FuzzyWhere;
             must.push({
-              match: {
-                [key]: { query: fuzzyWhere.value, fuzziness: "AUTO" },
+              fuzzy: {
+                [key]: {
+                  value: fuzzyWhere.value,
+                  fuzziness: fuzzyWhere.fuzziness,
+                  max_expansions: fuzzyWhere.maxExpansions,
+                  prefix_length: fuzzyWhere.prefixLength,
+                  rewrite: fuzzyWhere.rewrite,
+                  transpositions: fuzzyWhere.transpositions,
+                },
               },
             });
             break;

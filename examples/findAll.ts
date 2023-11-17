@@ -20,13 +20,13 @@ const sequelize = new Sequelize({
   // const movies1999 = await Movies.findAll({ where: { year: 1999 } });
   // console.log(movies1999);
 
-  // const fuzzySearch = await Movies.findAll({
-  //   where: {
-  //     name: { type: "fuzzy", value: "Matrix" },
-  //     year: 1999,
-  //   },
-  // });
-  // console.log(fuzzySearch);
+  const fuzzySearch = await Movies.findAll({
+    where: {
+      name: { type: "fuzzy", value: "Matrix" },
+      year: 1999,
+    },
+  });
+  console.log(fuzzySearch);
 
   // const rangeSearch = await Movies.findAll({
   //   where: {
@@ -49,14 +49,14 @@ const sequelize = new Sequelize({
   // });
   // console.log(regexSearch);
 
-  const wildcardSearch = await Movies.findAll({
-    where: {
-      name: {
-        // [Op.wildcard]: "*Matrix*",
-        type: "wildcard",
-        value: "*Matrix*",
-      },
-    },
-  });
-  console.log(wildcardSearch);
+  // const wildcardSearch = await Movies.findAll({
+  //   where: {
+  //     name: {
+  //       // [Op.wildcard]: "*Matrix*",
+  //       type: "wildcard",
+  //       value: "*Matrix*",
+  //     },
+  //   },
+  // });
+  // console.log(wildcardSearch);
 })();

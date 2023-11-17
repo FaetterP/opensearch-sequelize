@@ -1,6 +1,6 @@
 import { Model } from "../model/Model";
 import { DeepPartial } from "../utils/DeepPartial";
-import { DataValues } from "./model";
+import { DataValues, RewriteValues } from "./model";
 
 export type InitRequest = DeepPartial<{
   settings: IndexSettingsRequest;
@@ -75,7 +75,7 @@ export type Query<M extends Model = Model> = {
     [key in keyof DataValues<M>]:
       | DataValues<M>[key]
       | {
-          query: "wind";
+          query: string;
           allow_leading_wildcard?: boolean;
           analyze_wildcard?: boolean;
 
@@ -96,13 +96,7 @@ export type Query<M extends Model = Model> = {
           phrase_slop?: number;
           prefix_length?: number;
           quote_field_suffix?: string;
-          rewrite?:
-            | "constant_score"
-            | "scoring_boolean"
-            | "constant_score_boolean"
-            | "top_terms_N"
-            | "top_terms_boost_N"
-            | "top_terms_blended_freqs_N";
+          rewrite?: RewriteValues;
           slop?: number;
           tie_breaker?: number;
           time_zone?: string;
@@ -144,13 +138,7 @@ export type Query<M extends Model = Model> = {
       case_insensitive?: boolean;
       flags?: string;
       max_determinized_states?: number;
-      rewrite?:
-        | "constant_score"
-        | "scoring_boolean"
-        | "constant_score_boolean"
-        | "top_terms_N"
-        | "top_terms_boost_N"
-        | "top_terms_blended_freqs_N";
+      rewrite?: RewriteValues;
     };
   };
 
@@ -159,13 +147,18 @@ export type Query<M extends Model = Model> = {
       value: string;
       case_insensitive?: boolean;
       boost?: number;
-      rewrite?:
-        | "constant_score"
-        | "scoring_boolean"
-        | "constant_score_boolean"
-        | "top_terms_N"
-        | "top_terms_boost_N"
-        | "top_terms_blended_freqs_N";
+      rewrite?: RewriteValues;
+    };
+  };
+
+  fuzzy?: {
+    [key in keyof DataValues<M>]?: {
+      value: string;
+      fuzziness?: number | "AUTO";
+      max_expansions?: number;
+      prefix_length?: number;
+      rewrite?: RewriteValues;
+      transpositions?: boolean;
     };
   };
 };
