@@ -89,7 +89,8 @@ export type WhereType<M extends Model = Model> = {
         value: string;
       }
     | FuzzyWhere
-    | RangeWhere;
+    | RangeWhere
+    | RegexWhere;
 };
 
 export type FuzzyWhere = {
@@ -103,6 +104,21 @@ export type RangeWhere = {
   [Op.lt]?: number | string;
   [Op.lte]?: number | string;
   format?: string;
+};
+
+export type RegexWhere = (
+  | {
+      type: "regex";
+      value: string;
+    }
+  | {
+      [Op.regexp]: string;
+    }
+) & {
+  caseInsensitive?: boolean;
+  flags?: string;
+  maxDeterminizedStates?: number;
+  rewrite?: string;
 };
 
 // | {

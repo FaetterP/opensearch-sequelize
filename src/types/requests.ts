@@ -67,15 +67,7 @@ export type DynamicIndexSettingsRequest = {
 export type FindAllRequest = {
   from?: number;
   size?: number;
-  query?: {
-    bool?: {
-      must?: Query | Query[];
-      must_not?: Query | Query[];
-      should?: Query | Query[];
-      filter?: any;
-    };
-    match?: Record<string, string | number | boolean>;
-  };
+  query?: Query;
 };
 
 export type Query<M extends Model = Model> = {
@@ -140,6 +132,16 @@ export type Query<M extends Model = Model> = {
       gte?: string | number;
       lte?: string | number;
       format?: string;
+    };
+  };
+
+  regexp?: {
+    [key in keyof DataValues<M>]?: {
+      value: string;
+      case_insensitive?: boolean;
+      flags?: string;
+      max_determinized_states?: number;
+      rewrite?: string;
     };
   };
 };

@@ -28,10 +28,22 @@ const sequelize = new Sequelize({
   // });
   // console.log(fuzzySearch);
 
+  // const fuzzySearch = await Movies.findAll({
+  //   where: {
+  //     year: {
+  //       [Op.gt]: 1901,
+  //     },
+  //   },
+  // });
+  // console.log(fuzzySearch);
+
+  // !!! use Lucene regex syntax
   const fuzzySearch = await Movies.findAll({
     where: {
-      year: {
-        [Op.gt]: 1901,
+      name: {
+        // [Op.regexp]: ".*Matrix.*",
+        type: "regex",
+        value: ".*Matrix.*",
       },
     },
   });

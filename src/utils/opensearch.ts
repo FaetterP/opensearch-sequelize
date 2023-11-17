@@ -1,6 +1,6 @@
 import { Model } from "../model/Model";
 import { Op } from "../model/operators";
-import { DataValues, FuzzyWhere, WhereType } from "../types/model";
+import { DataValues, FuzzyWhere, RegexWhere, WhereType } from "../types/model";
 import { Query } from "../types/requests";
 import { Hit } from "../types/responses";
 
@@ -39,20 +39,49 @@ export function convertWhereToQuery<M extends Model = Model>(
             const fuzzyWhere = whereValue as FuzzyWhere;
             must.push({
               match: {
-                [`${key}`]: { query: fuzzyWhere.value, fuzziness: "AUTO" },
+                [key]: { query: fuzzyWhere.value, fuzziness: "AUTO" },
+              },
+            });
+            break;
+          case "regex":
+            const regexWhere = whereValue as RegexWhere & { value: string };
+            must.push({
+              regexp: {
+                [`${key}.keyword`]: {
+                  value: regexWhere.value,
+                  case_insensitive: regexWhere.caseInsensitive,
+                  flags: regexWhere.flags,
+                  max_determinized_states: regexWhere.maxDeterminizedStates,
+                  rewrite: regexWhere.rewrite,
+                },
               },
             });
             break;
           default:
         }
       } else {
-        range[key as keyof DataValues<M>] = {
-          gt: whereValue[Op.gt],
-          gte: whereValue[Op.gte],
-          lt: whereValue[Op.lt],
-          lte: whereValue[Op.lte],
-          format: whereValue["format"], // TODO fix type for 'whereValue'
-        };
+        if (whereValue[Op.regexp]) {
+          const regexWhere = whereValue as RegexWhere & { [Op.regexp]: string };
+          must.push({
+            regexp: {
+              [`${key}.keyword`]: {
+                value: regexWhere[Op.regexp],
+                case_insensitive: regexWhere.caseInsensitive,
+                flags: regexWhere.flags,
+                max_determinized_states: regexWhere.maxDeterminizedStates,
+                rewrite: regexWhere.rewrite,
+              },
+            },
+          });
+        } else {
+          range[key as keyof DataValues<M>] = {
+            gt: whereValue[Op.gt],
+            gte: whereValue[Op.gte],
+            lt: whereValue[Op.lt],
+            lte: whereValue[Op.lte],
+            format: whereValue["format"], // TODO fix type for 'whereValue'
+          };
+        }
       }
     } else if (typeof whereValue === "number") {
       must.push({
@@ -69,7 +98,9 @@ export function convertWhereToQuery<M extends Model = Model>(
     }
   }
 
-  must.push({ range });
+  if (Object.keys(range).length) {
+    must.push({ range });
+  }
 
   const query = {
     bool: {
