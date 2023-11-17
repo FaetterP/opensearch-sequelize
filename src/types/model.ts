@@ -82,15 +82,19 @@ export type FindAllOptions<M extends Model> = {
 };
 
 export type WhereType<M extends Model = Model> = {
-  [key in keyof DataValues<M>]?:
-    | DataValues<M>[key]
-    | {
-        type: "exact";
-        value: string;
-      }
-    | FuzzyWhere
-    | RangeWhere
-    | RegexWhere;
+  [key in keyof DataValues<M>]?: DataValues<M>[key] | WhereItem;
+};
+
+export type WhereItem =
+  | ExactWhere
+  | FuzzyWhere
+  | RangeWhere
+  | RegexWhere
+  | WildcardWhere;
+
+export type ExactWhere = {
+  type: "exact";
+  value: string;
 };
 
 export type FuzzyWhere = {
@@ -104,6 +108,9 @@ export type RangeWhere = {
   [Op.lt]?: number | string;
   [Op.lte]?: number | string;
   format?: string;
+  relation?: "INTERSECTS" | "CONTAINS" | "WITHIN";
+  boost?: number;
+  timezone?: string;
 };
 
 export type RegexWhere = (
@@ -118,7 +125,33 @@ export type RegexWhere = (
   caseInsensitive?: boolean;
   flags?: string;
   maxDeterminizedStates?: number;
-  rewrite?: string;
+  rewrite?:
+    | "constant_score"
+    | "scoring_boolean"
+    | "constant_score_boolean"
+    | "top_terms_N"
+    | "top_terms_boost_N"
+    | "top_terms_blended_freqs_N";
+};
+
+export type WildcardWhere = (
+  | {
+      type: "wildcard";
+      value: string;
+    }
+  | {
+      [Op.wildcard]: string;
+    }
+) & {
+  caseInsensitive?: boolean;
+  boost?: number;
+  rewrite?:
+    | "constant_score"
+    | "scoring_boolean"
+    | "constant_score_boolean"
+    | "top_terms_N"
+    | "top_terms_boost_N"
+    | "top_terms_blended_freqs_N";
 };
 
 // | {

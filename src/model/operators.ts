@@ -6,6 +6,7 @@ export interface OpTypes {
 
   readonly regexp: unique symbol;
   // readonly notRegexp: unique symbol;
+  readonly wildcard: unique symbol;
 }
 export const Op: OpTypes = {
   gt: Symbol.for("gt"),
@@ -15,4 +16,5 @@ export const Op: OpTypes = {
 
   regexp: Symbol.for("regexp"),
   // notRegexp: Symbol.for("notRegexp")
+  wildcard: Symbol.for("wildcard"),
 } as OpTypes;

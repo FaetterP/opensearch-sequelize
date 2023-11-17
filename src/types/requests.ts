@@ -132,6 +132,9 @@ export type Query<M extends Model = Model> = {
       gte?: string | number;
       lte?: string | number;
       format?: string;
+      relation?: "INTERSECTS" | "CONTAINS" | "WITHIN";
+      boost?: number;
+      time_zone?: string;
     };
   };
 
@@ -141,7 +144,28 @@ export type Query<M extends Model = Model> = {
       case_insensitive?: boolean;
       flags?: string;
       max_determinized_states?: number;
-      rewrite?: string;
+      rewrite?:
+        | "constant_score"
+        | "scoring_boolean"
+        | "constant_score_boolean"
+        | "top_terms_N"
+        | "top_terms_boost_N"
+        | "top_terms_blended_freqs_N";
+    };
+  };
+
+  wildcard?: {
+    [key in keyof DataValues<M>]?: {
+      value: string;
+      case_insensitive?: boolean;
+      boost?: number;
+      rewrite?:
+        | "constant_score"
+        | "scoring_boolean"
+        | "constant_score_boolean"
+        | "top_terms_N"
+        | "top_terms_boost_N"
+        | "top_terms_blended_freqs_N";
     };
   };
 };
