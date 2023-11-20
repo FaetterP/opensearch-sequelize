@@ -1,4 +1,6 @@
 export interface OpTypes {
+  readonly exists: unique symbol;
+
   readonly gt: unique symbol;
   readonly lt: unique symbol;
   readonly gte: unique symbol;
@@ -9,6 +11,8 @@ export interface OpTypes {
   readonly wildcard: unique symbol;
 }
 export const Op: OpTypes = {
+  exists: Symbol.for("exists"),
+
   gt: Symbol.for("gt"),
   lt: Symbol.for("lt"),
   gte: Symbol.for("gte"),

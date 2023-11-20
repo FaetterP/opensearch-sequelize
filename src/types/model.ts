@@ -1,6 +1,6 @@
 import { Model } from "../model/Model";
 import { DeepPartial } from "../utils/DeepPartial";
-import { Op } from "../model/operators";
+import { Op, OpTypes } from "../model/operators";
 
 export type IndexOptions = {
   tableName?: string;
@@ -86,11 +86,18 @@ export type WhereType<M extends Model = Model> = {
 };
 
 export type WhereItem =
+  | ExistsWhere
   | ExactWhere
   | FuzzyWhere
   | RangeWhere
   | RegexWhere
   | WildcardWhere;
+
+export type ExistsWhere =
+  | {
+      type: "exists";
+    }
+  | OpTypes["exists"];
 
 export type ExactWhere = {
   type: "exact";

@@ -48,6 +48,13 @@ const movies = await Movies.findAll({
 });
 ```
 
+If methods doesn't provide necessary functionality, then use raw requests:
+
+```js
+// GET /movies/_search with query
+const data = await Movies.queryGet("_search", query);
+```
+
 ## Examples
 
 You can find examples of using methods [here](https://github.com/FaetterP/opensearch-sequelize/tree/main/examples).

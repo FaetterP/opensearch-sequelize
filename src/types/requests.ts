@@ -119,6 +119,10 @@ export type Query<M extends Model = Model> = {
     filter?: Query;
   };
 
+  exists?: {
+    field: string;
+  };
+
   range?: {
     [key in keyof DataValues<M>]?: {
       gt?: string | number;

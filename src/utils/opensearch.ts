@@ -1,7 +1,8 @@
 import { Model } from "../model/Model";
-import { Op } from "../model/operators";
+import { Op, OpTypes } from "../model/operators";
 import {
   DataValues,
+  ExistsWhere,
   FuzzyWhere,
   RangeWhere,
   RegexWhere,
@@ -85,6 +86,13 @@ export function convertWhereToQuery<M extends Model = Model>(
               },
             });
             break;
+          case "exists":
+            must.push({
+              exists: {
+                field: key,
+              },
+            });
+            break;
           default:
         }
       } else {
@@ -129,6 +137,12 @@ export function convertWhereToQuery<M extends Model = Model>(
           };
         }
       }
+    } else if ((whereValue as ExistsWhere) === Op.exists) {
+      must.push({
+        exists: {
+          field: key,
+        },
+      });
     } else if (typeof whereValue === "number") {
       must.push({
         match: {
